@@ -9,33 +9,58 @@ category: Cryptography
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
+flags:
+  static:
+    description: Emit statically-linked binary
+    manual: False
+    default: False
 
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on Github at <https://github.com/githubuser/schnorr-nizk#readme>
+  optimized:
+    description: Perform compiler optimizations
+    manual: False
+    default: False
 
 dependencies:
-- base >= 4.7 && < 5
+  # Prelude
+  - base >= 4.7 && < 5
+  - protolude  >= 0.2
 
 library:
   source-dirs: src
 
-executables:
-  schnorr-nizk-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - schnorr-nizk
+  ghc-options:
+    -fwarn-tabs
+    -fwarn-incomplete-patterns
+    -fwarn-incomplete-record-updates
+    -fwarn-redundant-constraints
+    -fwarn-implicit-prelude
+    -fwarn-overflowed-literals
+    -fwarn-orphans
+    -fwarn-identities
+    -fwarn-dodgy-exports
+    -fwarn-dodgy-imports
+    -fwarn-duplicate-exports
+    -fwarn-overlapping-patterns
+    -fwarn-missing-fields
+    -fwarn-missing-methods
+    -fwarn-missing-signatures
+    -fwarn-noncanonical-monad-instances
+    -fwarn-unused-pattern-binds
+    -fwarn-unused-type-patterns
+    -fwarn-unrecognised-pragmas
+    -fwarn-wrong-do-bind
+    -fno-warn-name-shadowing
+    -fno-warn-unused-binds
+    -fno-warn-unused-matches
+    -fno-warn-unused-do-bind
+
+  default-extensions:
+    - LambdaCase
+    - RecordWildCards
+    - OverloadedStrings
+    - NoImplicitPrelude
+    - FlexibleInstances
 
 tests:
   schnorr-nizk-test:
