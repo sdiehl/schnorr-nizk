@@ -32,6 +32,15 @@ interactive msg = do
   --    3.  Alice computes r = v - a * c mod n and sends it to Bob.
   let r = (privCommit - privKey * challng) `mod` n
 
+  -- At the end of the protocol, Bob performs the following checks.  If
+  --   any check fails, the verification is unsuccessful.
+  --
+  --   1.  To verify pubKey is a valid point on the curve and A x [h] is not the
+  --       point at infinity;
+  let verifyPubKey = isPointValid pubKey && isPointAtInfinity pubKey
+
   --    2.  To verify V = G x [r] + A x [c].pubKey
-  let t@(Point x2 _) = pointAddTwoMuls r g challng pubKey
-  return $ x1 == x2
+  let (Point x2 _) = pointAddTwoMuls r g challng pubKey
+  let verifyPubCommit = x1 == x2
+
+  pure $ verifyPubKey && verifyPubCommit

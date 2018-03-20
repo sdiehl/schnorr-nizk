@@ -23,7 +23,11 @@ type PublicKey = Point
 -- secp256k1 curve specification
 -------------------------------------------------------------------------------
 
--- curve coefficient
+
+-- curve coefficients
+a :: Integer
+a = 0
+
 b :: Integer
 b = 7
 
@@ -125,3 +129,23 @@ divmod y x m = Just $ y * i `mod` m
 slope :: Point -> Point -> Maybe Integer
 slope (Point x1 y1) (Point x2 y2) = divmod (y1 - y2) (x1 - x2) pr
 slope _ _                         = Nothing
+
+-- | Check if a point is the point at infinity.
+isPointAtInfinity :: Point -> Bool
+isPointAtInfinity PointO = True
+isPointAtInfinity _      = False
+
+-- | check if a point is on specific curve
+--
+-- This perform three checks:
+--
+-- * x is not out of range
+-- * y is not out of range
+-- * the equation @y^2 = x^3 + a*x + b (mod p)@ holds
+isPointValid :: Point -> Bool
+isPointValid PointO      = True
+isPointValid (Point x y) =
+    isValid x && isValid y && (y ^ (2 :: Int)) `eqModP` (x ^ (3 :: Int) + a * x + b)
+  where
+        eqModP z1 z2 = (z1 `mod` pr) == (z2 `mod` pr)
+        isValid e = e >= 0 && e < pr
