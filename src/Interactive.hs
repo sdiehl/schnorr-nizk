@@ -48,7 +48,7 @@ interactive msg = do
   --   1.  To verify pubKey is a valid point on the curve and A x [h] is not the
   --       point at infinity;
   let verifyPubKey = ECC.isPointValid secp256k1 (ECDSA.public_q pubKey)
-                   && ECC.isPointAtInfinity (ECDSA.public_q pubKey)
+                   && not (ECC.isPointAtInfinity (ECDSA.public_q pubKey))
   --    2.  To verify V = G x [r] + A x [c].pubKey
   let t = ECC.pointAddTwoMuls secp256k1 r g challng (ECDSA.public_q pubKey)
   let verifyPubCommit = ECDSA.public_q pubCommit == t
