@@ -1,4 +1,4 @@
-module EC where
+module ECC.Internal where
 
 import           Control.Monad
 import           Data.Maybe
