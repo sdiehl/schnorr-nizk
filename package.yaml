@@ -25,6 +25,9 @@ dependencies:
   # Prelude
   - base >= 4.7 && < 5
   - protolude  >= 0.2
+  - cryptonite
+  - bytestring
+  - random
 
 library:
   source-dirs: src
@@ -61,6 +64,9 @@ library:
     - OverloadedStrings
     - NoImplicitPrelude
     - FlexibleInstances
+
+  exposed-modules:
+    - Interactive
 
 tests:
   schnorr-nizk-test:
