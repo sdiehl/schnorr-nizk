@@ -30,7 +30,7 @@ secp256k1 = ECC.getCurveByName ECC.SEC_p256k1
 generateKeys :: IO (ECDSA.PublicKey, ECDSA.PrivateKey)
 generateKeys = ECC.generate secp256k1
 
-generateCommit :: IO (ECDSA.PublicKey, ECDSA.PrivateKey)
+generateCommit :: IO (PublicCommit, PrivateCommit)
 generateCommit = generateKeys
 
 generateChallenge :: ByteString -> IO Challenge
