@@ -25,7 +25,7 @@ One of the simplest and frequently used proofs of knowledge, the proof of knowle
 Schnorr Interactive Zero-Knowledge Proof
 ========================================
 
-The prover aims to convince the verifier that he knows some value `a`. Let `a` be her private key. Therefore, `A = G * [a]` will be her public key. In order to prove knowledge of it, the prover interacts with the verifier in three passes:
+The prover aims to convince the verifier that he knows some value `a`. Let `a` be her private key. Therefore, `A = G * [a]`[1] will be her public key. In order to prove knowledge of it, the prover interacts with the verifier in three passes:
 
 - The prover commits himself to randomness v, chosen in the range [1, n-1]. This first message `commit = G * [v]` is called commitment.
 
@@ -41,3 +41,7 @@ The verifier accepts, if:
 **References**:
 
 1.  Hao, F. "Schnorr Non-interactive Zero-Knowledge Proof." Newcastle University, UK, 2017
+
+** Notation**:
+
+1. `P * [b]`: multiplication of a point P with a scalar b over an elliptic curve defined over a finite field modulo a prime number
