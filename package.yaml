@@ -87,3 +87,9 @@ tests:
     - tasty
     - tasty-hunit
     - tasty-quickcheck
+    default-extensions:
+    - LambdaCase
+    - RecordWildCards
+    - OverloadedStrings
+    - NoImplicitPrelude
+    - FlexibleInstances
