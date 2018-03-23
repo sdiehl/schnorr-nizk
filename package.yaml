@@ -28,6 +28,7 @@ dependencies:
   - cryptonite
   - bytestring
   - random
+  - memory
 
 library:
   source-dirs: src
@@ -66,7 +67,11 @@ library:
     - FlexibleInstances
 
   exposed-modules:
+    - Schnorr
+    - Curve
+    - NonInteractive
     - Interactive
+
 
 tests:
   schnorr-nizk-test:
