@@ -42,6 +42,7 @@ The verifier accepts, if:
 
 1.  Hao, F. "Schnorr Non-interactive Zero-Knowledge Proof." Newcastle University, UK, 2017
 
-** Notation**:
+
+**Notation**:
 
 1. `P * [b]`: multiplication of a point P with a scalar b over an elliptic curve defined over a finite field modulo a prime number
