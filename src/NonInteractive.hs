@@ -12,10 +12,15 @@ import           Protolude
 import           Curve
 import           Schnorr
 
+-- | Append coordinates to create a hashable type.
+-- It will be used in the protocol to make the challenge
 appendCoordinates :: Point -> ByteString
 appendCoordinates PointO      = ""
 appendCoordinates (Point x y) = show x <> show y
 
+-- | Make challenge through a Fiat-Shamir transformation.
+-- The challenge is then defined as `H(g || V || A)`,
+-- where `H` is a secure cryptographic hash function (SHA-256).
 mkChallenge :: ECDSA.PublicKey -> Point -> Integer
 mkChallenge pubKey pubCommit = oracle (gxy <> cxy <> pxy)
   where
