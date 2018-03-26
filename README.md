@@ -2,16 +2,16 @@
   <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/images/logo-small.png" width="250"/></a>
 </p>
 
-The purpose of the Schnorr protocol is to allow one to prove the knowledge of a discrete logarithm without revealing its value. It's one of the simplest and most frequently used proofs of knowledge.
+The purpose of the Schnorr protocol is to allow one to prove the knowledge of a discrete logarithm without revealing its value.
 
 Schnorr Identification Scheme
 =============================
 
-The Schnorr protocol is an example of a Sigma protocol. A Sigma protocol is a three-step protocol in which communication between prover and verifier goes forwards once, then backwards, then forwards again. Its name is due to its resemblance to the greek letter &sum;. In general terms:
+The Schnorr protocol is an example of a Sigma protocol. A Sigma protocol is a three-step protocol in which communication between prover and verifier goes forwards once, then backwards, then forwards again. In general terms:
 
-- P  ->  V:  commitment
-- V  ->  P:  challenge
-- P  ->  V:  response (proof)
+- `P  ->  V`:  commitment
+- `V  ->  P`:  challenge
+- `P  ->  V`:  response (proof)
 
 The Schnorr identification scheme runs interactively between the prover and the verifier. The protocol is defined for a cyclic group of order `n` with generator `G`.
 
@@ -97,3 +97,22 @@ testNonInteractive = do
 **Notation**:
 
 1. `P * [b]`: multiplication of a point P with a scalar b over an elliptic curve defined over a finite field modulo a prime number
+
+License
+-------
+
+```
+Copyright 2018 Adjoint Inc
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
