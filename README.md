@@ -28,6 +28,23 @@ The verifier accepts, if:
 
 - The prover's commitment value is equal to `G * [r] + P * [challenge]`
 
+```haskell
+testInteractive :: IO Bool
+testInteractive = do
+  -- Prover
+  (pubKey, privKey) <- generateKeys
+  (pubCommit, privCommit) <- generateCommitment
+
+  -- Verifier
+  let msg = "Hello World"
+  challenge <- generateChallenge msg
+
+  -- Prover
+  let resp = computeResponse privCommit privKey challenge
+
+  -- Verifier
+  pure $ verify pubKey pubCommit challenge resp
+```
 
 Zero Knowledge Proofs
 =====================
@@ -52,6 +69,25 @@ The original Schnorr identification scheme is made non-interactive through a Fia
 A “random oracle” is considered to be a black box that outputs unpredictable but deterministic random values in response to input. That means that, if you give it the same input twice, it will give back the same random output. The input to the random oracle, in the Fiat-Shamir heuristic, is specifically the transcript of the interaction up to that point. The challenge is then redefined as `challenge = H(g || V || A)`, where `H` is a secure cryptographic hash function like SHA-256. The bit length of the hash output should be at least equal to that of the order `n` of the considered subgroup.
 
 This non-interactive variant of the Schnorr protocol is called the Schnorr NIZK proof.
+
+```haskell
+
+testNonInteractive :: IO Bool
+testNonInteractive = do
+  -- Prover
+  (pubKey, privKey) <- generateKeys
+  (pubCommit, privCommit) <- generateCommitment
+
+  -- Verifier
+  let challenge = mkChallenge pubKey pubCommit
+
+  -- Prover
+  let resp = computeResponse privCommit privKey challenge
+
+  -- Verifier
+  pure $ verify pubKey pubCommit challenge resp
+
+```
 
 **References**:
 
