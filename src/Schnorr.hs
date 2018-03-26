@@ -21,7 +21,7 @@ import           Data.ByteString            as BS
 import           Data.Monoid
 import           Protolude                  hiding (hash)
 
-import           Curve
+import qualified Curve
 
 -------------------------------------------------------------------------------
 -- Schnorr Indentification Scheme - Elliptic Curve (SECP256k1)
@@ -34,21 +34,21 @@ type PrivateCommitment = Integer
 
 -- | Generate public and private keys
 generateKeys :: MonadRandom m => m (ECDSA.PublicKey, ECDSA.PrivateKey)
-generateKeys = generate secp256k1
+generateKeys = generate Curve.secp256k1
 
 -- | Compute response from previous generated values:
 -- private commitment value, prover's private key and verifier's challenge
 computeResponse :: PrivateCommitment -> ECDSA.PrivateKey -> Challenge -> Response
-computeResponse pc pk challenge = pc - ECDSA.private_d pk * challenge `mod` n
+computeResponse pc pk challenge = pc - ECDSA.private_d pk * challenge `mod` Curve.n
 
 -- | Verify proof given by the prover.
 -- It receives a public key, a commitment, a challenge and a response value.
 verify :: ECDSA.PublicKey -> PublicCommitment -> Challenge -> Response -> Bool
 verify pubKey pubCommit challenge r = verifyPubKey && verifyPubCommit
   where
-    verifyPubKey = isPointValid secp256k1 (ECDSA.public_q pubKey)
-        && not (isPointAtInfinity $ pointMul secp256k1 h (ECDSA.public_q pubKey))
-    t = pointAddTwoMuls secp256k1 r g challenge (ECDSA.public_q pubKey)
+    verifyPubKey = isPointValid Curve.secp256k1 (ECDSA.public_q pubKey)
+        && not (isPointAtInfinity $ pointMul Curve.secp256k1 Curve.h (ECDSA.public_q pubKey))
+    t = pointAddTwoMuls Curve.secp256k1 r Curve.g challenge (ECDSA.public_q pubKey)
     verifyPubCommit = pubCommit == t
 
 -- | Generate random commitment value
@@ -56,8 +56,6 @@ verify pubKey pubCommit challenge r = verifyPubKey && verifyPubCommit
 -- while sharing the point in the curve obtained by multiplying G * [k]
 generateCommitment :: MonadRandom m => m (PublicCommitment, PrivateCommitment)
 generateCommitment = do
-  k <- generateBetween 0 (n-1)
-  let k' = pointBaseMul secp256k1 k
+  k <- generateBetween 0 (Curve.n-1)
+  let k' = pointBaseMul Curve.secp256k1 k
   pure (k', k)
-
-

@@ -13,7 +13,7 @@ import           Crypto.Number.Generate     (generateBetween)
 import           NonInteractive
 import           Interactive
 import           Schnorr
-import           Curve
+import qualified Curve
 
 main :: IO ()
 main = defaultMain tests
@@ -49,7 +49,7 @@ schnorrTests = testGroup "Schnorr Indentification Schemes"
       let challenge = mkChallenge pubKey pubCommit
 
       step "Alice computes the response but doesn't know the random commitment private value..."
-      randomPrivCommit <- generateBetween 1 (n - 1)
+      randomPrivCommit <- generateBetween 1 (Curve.n - 1)
       let resp = computeResponse randomPrivCommit privKey challenge
 
       step "Bob only verifies that Alice knows the value of the private key..."
