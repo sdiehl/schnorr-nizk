@@ -11,6 +11,7 @@ module Schnorr
 
 import           Crypto.Hash
 import           Crypto.Number.Generate     (generateBetween)
+import           Crypto.Random.Types (MonadRandom)
 import           Crypto.Number.Serialize    (os2ip)
 import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
 import           Crypto.PubKey.ECC.Generate
@@ -32,7 +33,7 @@ type PublicCommitment = Point
 type PrivateCommitment = Integer
 
 -- | Generate public and private keys
-generateKeys :: IO (ECDSA.PublicKey, ECDSA.PrivateKey)
+generateKeys :: MonadRandom m => m (ECDSA.PublicKey, ECDSA.PrivateKey)
 generateKeys = generate secp256k1
 
 -- | Compute response from previous generated values:
@@ -53,7 +54,7 @@ verify pubKey pubCommit challenge r = verifyPubKey && verifyPubCommit
 -- | Generate random commitment value
 -- The prover keeps the random value generated safe
 -- while sharing the point in the curve obtained by multiplying G * [k]
-generateCommitment :: IO (PublicCommitment, PrivateCommitment)
+generateCommitment :: MonadRandom m => m (PublicCommitment, PrivateCommitment)
 generateCommitment = do
   k <- generateBetween 0 (n-1)
   let k' = pointBaseMul secp256k1 k
