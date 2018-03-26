@@ -10,6 +10,7 @@ import           Test.Tasty.HUnit
 import           Test.Tasty.QuickCheck
 
 import           NonInteractive
+import           Interactive
 import           Schnorr
 
 main :: IO ()
@@ -24,7 +25,7 @@ schnorrTests = testGroup "Schnorr Indentification Schemes"
       (pubKey, privKey) <- generateKeys
 
       step "Alice also generates private and public commitment values..."
-      (pubCommit, privCommit) <- generateCommit
+      (pubCommit, privCommit) <- generateCommitment
 
       step "Using a secure cryptographic hash function to issue the challenge instead..."
       let challenge = mkChallenge pubKey pubCommit
@@ -42,7 +43,7 @@ schnorrTests = testGroup "Schnorr Indentification Schemes"
 interactiveTest :: [Char] -> Property
 interactiveTest msg = monadicIO $ do
     (pubKey, privKey) <- liftIO generateKeys
-    (pubCommit, privCommit) <- liftIO generateCommit
+    (pubCommit, privCommit) <- liftIO generateCommitment
     challenge <- liftIO $ generateChallenge (show msg)
     let r = computeResponse privCommit privKey challenge
     pure $ verify pubKey pubCommit challenge r

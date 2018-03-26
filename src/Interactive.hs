@@ -6,10 +6,9 @@
 -- >>> let r = computeResponse privCommit privKey challenge -- prover
 -- >>> verify pubKey pubCommit challenge r -- verifier
 -- True
-module Interactive
-  ( testProof
-  , generateChallenge
-  ) where
+module Interactive (
+  generateChallenge,
+) where
 import qualified Data.ByteString as BS
 import           Crypto.Number.Generate     (generateBetween)
 import           Protolude

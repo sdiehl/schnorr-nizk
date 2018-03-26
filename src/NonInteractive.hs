@@ -6,10 +6,9 @@
 -- >>> let r = computeResponse privCommit privKey challenge -- prover
 -- >>> verify pubKey pubCommit challenge r -- verifier
 -- True
-module NonInteractive
-  ( testProof
-  , mkChallenge
-  ) where
+module NonInteractive (
+  mkChallenge,
+) where
 
 import           Protolude                  hiding (hash)
 import           Crypto.Hash
