@@ -1,3 +1,5 @@
 # Changelog for schnorr-nizk
 
-## Unreleased changes
+## 0.1
+
+* Initial release.
