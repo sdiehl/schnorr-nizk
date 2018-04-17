@@ -8,18 +8,73 @@ import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Test.Tasty.QuickCheck
 import           Crypto.Number.Generate     (generateBetween)
+import qualified Crypto.PubKey.ECC.Generate as ECC
+import qualified Crypto.PubKey.ECC.Prim as ECC
 import qualified Crypto.PubKey.ECC.Types as ECC
 
 import           NonInteractive
 import           Interactive
 import           Schnorr
 import qualified Curve
+import GroupProperties
 
 main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Tests" [schnorrTests]
+tests = testGroup "Tests" [
+  schnorrTests,
+  test_groupLaws_SEC_p256k1,
+  test_groupLaws_Curve25519
+  ]
+
+genPoint :: ECC.Curve -> Gen ECC.Point
+genPoint curve = ECC.generateQ curve <$> arbitrary
+
+testAbelianGroupLaws
+  :: (ECC.Curve -> ECC.Point -> ECC.Point -> ECC.Point)
+  -> (ECC.Curve -> ECC.Point -> ECC.Point)
+  -> ECC.Point
+  -> ECC.Curve
+  -> TestName
+  -> TestTree
+testAbelianGroupLaws binOp neg identity curve descr
+  = testGroup ("Test Abelian group laws of " <> descr)
+    [ testProperty "commutativity of addition"
+      $ forAll (genPoint curve) $ \p1
+      -> forAll (genPoint curve) $ \p2
+      -> commutes (binOp curve) p1 p2
+
+    , testProperty "commutativity of addition"
+        $ forAll (genPoint curve) $ \p1
+        -> forAll (genPoint curve) $ \p2
+        -> forAll (genPoint curve) $ \p3
+        -> associates (binOp curve) p1 p2 p3
+
+    , testProperty "additive identity"
+      $ forAll (genPoint curve) $ isIdentity (binOp curve) identity
+
+    , testProperty "additive inverse"
+      $ forAll (genPoint curve) $ isInverse (binOp curve) (neg curve) identity
+    ]
+
+test_groupLaws_SEC_p256k1 :: TestTree
+test_groupLaws_SEC_p256k1
+  = testAbelianGroupLaws
+      ECC.pointAdd
+      ECC.pointNegate
+      ECC.PointO
+      (ECC.getCurveByName ECC.SEC_p256k1)
+      "SEC_p256k1"
+
+test_groupLaws_Curve25519 :: TestTree
+test_groupLaws_Curve25519
+  = testAbelianGroupLaws
+      ECC.pointAdd
+      ECC.pointNegate
+      ECC.PointO
+      Curve.curve25519
+      "Curve25519"
 
 completenessNonInt :: Curve.Curve c => c -> ([Char] -> IO ()) -> IO ()
 completenessNonInt curveName step = do

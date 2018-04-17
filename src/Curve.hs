@@ -1,6 +1,7 @@
 module Curve
   ( Curve(..)
   , Curve25519(..)
+  , curve25519
   ) where
 
 import qualified Crypto.PubKey.ECC.Prim as ECC
