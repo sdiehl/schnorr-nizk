@@ -2,7 +2,6 @@
 
 module Main where
 
-import           Data.ByteString
 import           Protolude
 import           Test.QuickCheck.Monadic
 import           Test.Tasty
@@ -68,13 +67,13 @@ schnorrTests = testGroup "Schnorr Indentification Schemes"
       "Non-interactive. Soundness property. Secp256k1 Curve"
       (soundnessNonInt ECC.SEC_p256k1)
 
-  -- , testCaseSteps
-  --     "Non-interactive. Completeness property. Curve25519 Curve"
-  --     (completenessNonInt ECC.Curve25519)
-  --
-  -- , testCaseSteps
-  --     "Non-interactive. Soundness property. Curve25519 Curve"
-  --     (soundnessNonInt ECC.Curve25519)
+  , testCaseSteps
+      "Non-interactive. Completeness property. Curve25519 Curve"
+      (completenessNonInt Curve.Curve25519)
+
+  , testCaseSteps
+      "Non-interactive. Soundness property. Curve25519 Curve"
+      (soundnessNonInt Curve.Curve25519)
 
   , testProperty "Interactive. Secp256k1 Curve" (interactiveTest ECC.SEC_p256k1)
   ]
