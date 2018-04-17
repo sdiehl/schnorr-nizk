@@ -1,28 +1,29 @@
 module Curve
-  ( secp256k1
-  , n
-  , g
-  , h
+  ( Curve(..)
   ) where
 
-import           Crypto.PubKey.ECC.Prim
-import           Crypto.PubKey.ECC.Types
+import qualified Crypto.PubKey.ECC.Prim as ECC
+import qualified Crypto.PubKey.ECC.Types as ECC
+import qualified Crypto.ECC as ECC hiding (Point)
 import           Protolude
 
-secp256k1 :: Curve
-secp256k1 = getCurveByName SEC_p256k1
+class Curve a where
+  curve :: a -> ECC.Curve
+  cc :: a -> ECC.CurveCommon
+  n :: a -> Integer
+  g :: a -> ECC.Point
+  h :: a -> Integer
 
-cc :: CurveCommon
-cc = common_curve secp256k1
+instance Curve ECC.CurveName where
+  curve = ECC.getCurveByName
+  cc = ECC.common_curve . curve
+  n = ECC.ecc_n . cc
+  g = ECC.ecc_g . cc
+  h = ECC.ecc_h . cc
 
--- | Order of the curve
-n :: Integer
-n = ecc_n cc
-
--- | Generator base point
-g :: Point
-g = ecc_g cc
-
--- | Curve cofactor
-h :: Integer
-h = ecc_h cc
+instance Curve ECC.Curve_X25519 where
+  curve = undefined
+  cc = undefined
+  n = undefined
+  g = undefined
+  h = undefined

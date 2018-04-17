@@ -13,7 +13,8 @@ module NonInteractive (
 import           Protolude                  hiding (hash)
 import           Crypto.Hash
 import qualified Crypto.PubKey.ECC.ECDSA as ECDSA
-import           Crypto.PubKey.ECC.Types
+import       qualified    Crypto.PubKey.ECC.Types
+import qualified           Crypto.PubKey.ECC.Types    as ECC
 
 import           Crypto.Number.Serialize    (os2ip)
 import qualified Data.ByteArray             as BA
@@ -21,22 +22,27 @@ import qualified Data.ByteArray             as BA
 import           Data.ByteString
 import           Data.Monoid
 
-import           Curve
+import qualified Curve
 import           Schnorr
 
 -- | Append coordinates to create a hashable type.
 -- It will be used in the protocol to make the challenge
-appendCoordinates :: Point -> ByteString
-appendCoordinates PointO      = ""
-appendCoordinates (Point x y) = show x <> show y
+appendCoordinates :: ECC.Point -> ByteString
+appendCoordinates ECC.PointO      = ""
+appendCoordinates (ECC.Point x y) = show x <> show y
 
 -- | Make challenge through a Fiat-Shamir transformation.
 -- The challenge is then defined as `H(g || V || A)`,
 -- where `H` is a secure cryptographic hash function (SHA-256).
-mkChallenge :: ECDSA.PublicKey -> Point -> Integer
-mkChallenge pubKey pubCommit = oracle (gxy <> cxy <> pxy)
+mkChallenge
+  :: Curve.Curve c
+  => c
+  -> ECDSA.PublicKey
+  -> ECC.Point
+  -> Integer
+mkChallenge curveName pubKey pubCommit = oracle curveName (gxy <> cxy <> pxy)
   where
-    gxy = appendCoordinates g
+    gxy = appendCoordinates (Curve.g curveName)
     cxy = appendCoordinates pubCommit
     pxy = (appendCoordinates . ECDSA.public_q) pubKey
 
@@ -46,8 +52,8 @@ mkChallenge pubKey pubCommit = oracle (gxy <> cxy <> pxy)
 -- input twice, it will give back the same random output.
 -- The input to the random oracle, in the Fiat-Shamir heuristic,
 -- is specifically the transcript of the interaction up to that point.
-oracle :: ByteString -> Integer
-oracle x = os2ip (sha256 x) `mod` n
+oracle :: Curve.Curve c => c -> ByteString -> Integer
+oracle curveName x = os2ip (sha256 x) `mod` Curve.n curveName
 
 -- | Secure cryptographic hash function
 sha256 :: ByteString -> ByteString
