@@ -71,6 +71,7 @@ library:
     - Curve
     - NonInteractive
     - Interactive
+    - Curve25519
 
 
 tests:

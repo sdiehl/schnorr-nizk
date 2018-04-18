@@ -1,4 +1,4 @@
-module TestCommon
+module GroupLaws
   ( commutes
   , associates
   , isIdentity
