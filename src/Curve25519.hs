@@ -61,7 +61,7 @@ isPointValid (ECC.CurveFP (ECC.CurvePrime p cc)) (ECC.Point x y) =
         b  = ECC.ecc_b cc
         eqModP z1 z2 = (z1 `mod` p) == (z2 `mod` p)
         isValid e = e >= 0 && e < p
-isPointValid _ _ = notImplemented
+isPointValid _ _ = False
 
 -- | Elliptic Curve point doubling.
 --
@@ -75,7 +75,7 @@ pointDouble (ECC.CurveFP (ECC.CurvePrime pr cc)) (ECC.Point xp yp) =
         yr = (lambda * (xp - xr) - yp) `mod` pr
     return $ ECC.Point xr yr
   where a = ECC.ecc_a cc
-pointDouble _ _ = notImplemented
+pointDouble _ _ = panic "Invalid point"
 
 -- | Elliptic curve point multiplication (double and add algorithm).
 --
@@ -95,7 +95,7 @@ pointMul c n p
 pointNegate :: ECC.Curve -> ECC.Point -> ECC.Point
 pointNegate _               ECC.PointO      = ECC.PointO
 pointNegate (ECC.CurveFP c) (ECC.Point x y) = ECC.Point x (ECC.ecc_p c - y)
-pointNegate _ _                             = notImplemented
+pointNegate _ _                             = panic "Invalid point"
 
 -- | Elliptic Curve point addition.
 --
@@ -114,7 +114,7 @@ pointAdd curve@(ECC.CurveFP (ECC.CurvePrime pr cc)) (ECC.Point xp yp) (ECC.Point
             yr = (lambda * (xp - xr) - yp) `mod` pr
         return $ ECC.Point xr yr
   where a = ECC.ecc_a cc
-pointAdd _ _ _ = notImplemented
+pointAdd _ _ _ = panic "Invalid point"
 
 -- | Elliptic curve double-scalar multiplication (uses Shamir's trick).
 --
