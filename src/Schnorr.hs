@@ -3,7 +3,6 @@ module Schnorr
   , Response
   , PublicCommitment
   , PrivateCommitment
-  , generateKeys
   , generateCommitment
   , computeResponse
   , verify
@@ -14,48 +13,67 @@ import           Crypto.Number.Generate     (generateBetween)
 import           Crypto.Random.Types (MonadRandom)
 import           Crypto.Number.Serialize    (os2ip)
 import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
-import           Crypto.PubKey.ECC.Generate
-import           Crypto.PubKey.ECC.Prim
-import           Crypto.PubKey.ECC.Types
-import           Data.ByteString            as BS
+import qualified Crypto.PubKey.ECC.Generate as ECC
+import qualified Crypto.PubKey.ECC.Prim     as ECC
+import qualified Crypto.PubKey.ECC.Types    as ECC
+import qualified Data.ByteString            as BS
 import           Data.Monoid
-import           Protolude                  hiding (hash)
+import           Protolude
 
 import qualified Curve
 
--------------------------------------------------------------------------------
--- Schnorr Indentification Scheme - Elliptic Curve (SECP256k1)
--------------------------------------------------------------------------------
+-----------------------------------------------------
+-- Schnorr Indentification Scheme - Elliptic Curve
+-----------------------------------------------------
 
 type Challenge = Integer
 type Response = Integer
-type PublicCommitment = Point
+type PublicCommitment = ECC.Point
 type PrivateCommitment = Integer
-
--- | Generate public and private keys
-generateKeys :: MonadRandom m => m (ECDSA.PublicKey, ECDSA.PrivateKey)
-generateKeys = generate Curve.secp256k1
 
 -- | Compute response from previous generated values:
 -- private commitment value, prover's private key and verifier's challenge
-computeResponse :: PrivateCommitment -> ECDSA.PrivateKey -> Challenge -> Response
-computeResponse pc pk challenge = pc - ECDSA.private_d pk * challenge `mod` Curve.n
+computeResponse
+  :: Curve.Curve c
+  => c
+  -> PrivateCommitment
+  -> ECDSA.PrivateKey
+  -> Challenge
+  -> Response
+computeResponse curveName pc pk challenge =
+  pc - ECDSA.private_d pk * challenge `mod` Curve.n curveName
 
 -- | Verify proof given by the prover.
 -- It receives a public key, a commitment, a challenge and a response value.
-verify :: ECDSA.PublicKey -> PublicCommitment -> Challenge -> Response -> Bool
-verify pubKey pubCommit challenge r = verifyPubKey && verifyPubCommit
+verify
+  :: Curve.Curve c
+  => c
+  -> ECDSA.PublicKey
+  -> PublicCommitment
+  -> Challenge
+  -> Response
+  -> Bool
+verify curveName pubKey pubCommit challenge r =
+  verifyPubKey && verifyPubCommit
   where
-    verifyPubKey = isPointValid Curve.secp256k1 (ECDSA.public_q pubKey)
-        && not (isPointAtInfinity $ pointMul Curve.secp256k1 Curve.h (ECDSA.public_q pubKey))
-    t = pointAddTwoMuls Curve.secp256k1 r Curve.g challenge (ECDSA.public_q pubKey)
+    validPoint = Curve.isPointValid curveName (ECDSA.public_q pubKey)
+    infinity = Curve.isPointAtInfinity curveName $
+      Curve.pointMul curveName h (ECDSA.public_q pubKey)
+    verifyPubKey = validPoint && not infinity
+    t = Curve.pointAddTwoMuls curveName r g challenge (ECDSA.public_q pubKey)
     verifyPubCommit = pubCommit == t
+    curve = Curve.curve curveName
+    g = Curve.g curveName
+    h = Curve.h curveName
 
 -- | Generate random commitment value
 -- The prover keeps the random value generated safe
 -- while sharing the point in the curve obtained by multiplying G * [k]
-generateCommitment :: MonadRandom m => m (PublicCommitment, PrivateCommitment)
-generateCommitment = do
-  k <- generateBetween 0 (Curve.n-1)
-  let k' = pointBaseMul Curve.secp256k1 k
+generateCommitment
+  :: (MonadRandom m, Curve.Curve c)
+  => c
+  -> m (PublicCommitment, PrivateCommitment)
+generateCommitment curveName = do
+  k <- generateBetween 0 (Curve.n curveName - 1)
+  let k' = Curve.pointBaseMul curveName k
   pure (k', k)
