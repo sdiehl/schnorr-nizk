@@ -21,16 +21,17 @@ import qualified Crypto.PubKey.ECC.ECDSA      as ECDSA
 import           Crypto.Random.Types          (MonadRandom)
 import           Crypto.Number.ModArithmetic  (inverse)
 
+-- | Curve25519 definition
 -- For the ~128-bit security level, the prime 2^255 - 19 is recommended
 -- for performance on a wide range of architectures.
--- v^2 = u^3 + A*u^2 + u, called "curve25519":
--- p  2^255 - 19
--- A  486662
--- order  2^252 + 0x14def9dea2f79cd65812631a5cf5d3ed = 7237005577332262213973186563042994240857116359379907606001950938285454250989
--- cofactor  8
--- U(P)  9
--- V(P)  14781619447589544791020593568409986887264606134616475288964881837755586237401
--- The base point is u = 9, v = 14781619447589544791020593568409986887264606134616475288964881837755586237401
+-- * @v^2 = u^3 + A*u^2 + u@:
+-- * p  2^255 - 19
+-- * A  486662
+-- * order  2^252 + 0x14def9dea2f79cd65812631a5cf5d3ed = 7237005577332262213973186563042994240857116359379907606001950938285454250989
+-- * cofactor  8
+-- * U(P)  9
+-- * V(P)  14781619447589544791020593568409986887264606134616475288964881837755586237401
+-- * The base point is u = 9, v = 14781619447589544791020593568409986887264606134616475288964881837755586237401
 curve25519 :: ECC.Curve
 curve25519 = ECC.CurveFP $ ECC.CurvePrime
   0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED
@@ -42,6 +43,13 @@ curve25519 = ECC.CurveFP $ ECC.CurvePrime
       , ecc_h = 0x8
       }
 
+-- | Check if a point is on specific curve
+--
+-- This perform three checks:
+--
+-- * x is not out of range
+-- * y is not out of range
+-- * the equation @y^2 = x^3 + a*x^2 + x (mod p)@ holds
 isPointValid :: ECC.Curve -> ECC.Point -> Bool
 isPointValid _                                   ECC.PointO      = True
 isPointValid (ECC.CurveFP (ECC.CurvePrime p cc)) (ECC.Point x y) =
@@ -53,6 +61,9 @@ isPointValid (ECC.CurveFP (ECC.CurvePrime p cc)) (ECC.Point x y) =
         isValid e = e >= 0 && e < p
 isPointValid _ _ = notImplemented
 
+-- | Elliptic Curve point doubling.
+--
+-- /WARNING:/ Vulnerable to timing attacks.
 pointDouble :: ECC.Curve -> ECC.Point -> ECC.Point
 pointDouble _ ECC.PointO = ECC.PointO
 pointDouble (ECC.CurveFP (ECC.CurvePrime pr cc)) (ECC.Point xp yp) =
@@ -64,6 +75,8 @@ pointDouble (ECC.CurveFP (ECC.CurvePrime pr cc)) (ECC.Point xp yp) =
   where a = ECC.ecc_a cc
 pointDouble _ _ = notImplemented
 
+-- | Elliptic curve point multiplication (double and add algorithm).
+--
 -- /WARNING:/ Vulnerable to timing attacks.
 pointMul :: ECC.Curve -> Integer -> ECC.Point -> ECC.Point
 pointMul _ _ ECC.PointO = ECC.PointO
@@ -81,6 +94,8 @@ pointNegate _               ECC.PointO      = ECC.PointO
 pointNegate (ECC.CurveFP c) (ECC.Point x y) = ECC.Point x (ECC.ecc_p c - y)
 pointNegate _ _                             = notImplemented
 
+-- | Elliptic Curve point addition.
+--
 -- /WARNING:/ Vulnerable to timing attacks.
 pointAdd :: ECC.Curve -> ECC.Point -> ECC.Point -> ECC.Point
 pointAdd _ ECC.PointO ECC.PointO = ECC.PointO
@@ -131,6 +146,8 @@ pointAddTwoMuls c n1 p1     n2 p2
 pointBaseMul :: ECC.Curve -> Integer -> ECC.Point
 pointBaseMul c n = pointMul c n (ECC.ecc_g $ ECC.common_curve c)
 
+-- | Generate Q given d.
+--
 -- /WARNING:/ Vulnerable to timing attacks.
 generateQ :: ECC.Curve
           -> Integer
