@@ -89,6 +89,16 @@ testNonInteractive = do
 
 ```
 
+Curves
+======
+
+This Schnorr implementation offers support for both SECp256k1 and Curve25519 curves,
+which are Koblitz and Montgomery curves, respectively. Further information about
+these curves can be found in the Uplink docs:
+
+[SECp256k1 curve](https://www.adjoint.io/docs/cryptography.html#id1 "SECp256k1 curve")
+[Curve25519 curve](https://www.adjoint.io/docs/cryptography.html#id2 "Curve25519 curve")
+
 **References**:
 
 1.  Hao, F. "Schnorr Non-interactive Zero-Knowledge Proof." Newcastle University, UK, 2017

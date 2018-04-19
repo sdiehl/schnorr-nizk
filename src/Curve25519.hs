@@ -22,8 +22,10 @@ import           Crypto.Random.Types          (MonadRandom)
 import           Crypto.Number.ModArithmetic  (inverse)
 
 -- | Curve25519 definition
+--
 -- For the ~128-bit security level, the prime 2^255 - 19 is recommended
 -- for performance on a wide range of architectures.
+--
 -- * @v^2 = u^3 + A*u^2 + u@:
 -- * p  2^255 - 19
 -- * A  486662
@@ -88,6 +90,7 @@ pointMul c n p
     | otherwise = pointMul c (n `div` 2) (pointDouble c p)
 
 -- | Elliptic Curve point negation:
+--
 -- @pointNegate c p@ returns point @q@ such that @pointAdd c p q == PointO@.
 pointNegate :: ECC.Curve -> ECC.Point -> ECC.Point
 pointNegate _               ECC.PointO      = ECC.PointO
