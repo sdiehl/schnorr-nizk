@@ -59,8 +59,7 @@ verify curveName pubKey pubCommit challenge r =
     validPoint = Curve.isPointValid curveName (ECDSA.public_q pubKey)
     infinity = Curve.isPointAtInfinity curveName $
       Curve.pointMul curveName h (ECDSA.public_q pubKey)
-    verifyPubKey = validPoint
-     -- && not (infinity (ECDSA.public_q pubKey))
+    verifyPubKey = validPoint && not infinity
     t = Curve.pointAddTwoMuls curveName r g challenge (ECDSA.public_q pubKey)
     verifyPubCommit = pubCommit == t
     curve = Curve.curve curveName
