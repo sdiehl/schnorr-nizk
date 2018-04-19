@@ -12,18 +12,15 @@ module NonInteractive (
 
 import           Protolude                  hiding (hash)
 import           Crypto.Hash
-import qualified Crypto.PubKey.ECC.ECDSA as ECDSA
-import       qualified    Crypto.PubKey.ECC.Types
-import qualified           Crypto.PubKey.ECC.Types    as ECC
-
+import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
+import qualified Crypto.PubKey.ECC.Types
+import qualified Crypto.PubKey.ECC.Types    as ECC
 import           Crypto.Number.Serialize    (os2ip)
 import qualified Data.ByteArray             as BA
-
 import           Data.ByteString
 import           Data.Monoid
 
 import qualified Curve
-import           Schnorr
 
 -- | Append coordinates to create a hashable type.
 -- It will be used in the protocol to make the challenge
