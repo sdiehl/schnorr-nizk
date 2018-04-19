@@ -1,16 +1,5 @@
 module TestCurveOps (testCurveOps) where
 
--- pointNegate
--- ( scalarGenerate
--- , pointAdd
--- , pointNegate
--- , pointDouble
--- , pointBaseMul
--- , pointMul
--- , pointAddTwoMuls
--- , isPointAtInfinity
--- , isPointValid
-
 import Protolude
 
 import           Test.QuickCheck.Monadic
@@ -29,29 +18,35 @@ import qualified Curve25519
 
 testCurveOps :: TestTree
 testCurveOps = testGroup "Curve operations"
+  [ testCurveOps' Curve.Curve25519
+  , testCurveOps' $ Curve.SECCurve ECC.SEC_p256k1
+  ]
+
+testCurveOps' :: Curve.Curve c => c -> TestTree
+testCurveOps' curveName = testGroup ("Curve: " <> show curveName)
   [ testCase
-      "Curve generator g is valid point. Curve25519"
-      (gIsPointValid Curve.Curve25519)
+      "Curve generator g is valid point."
+      (gIsPointValid curveName)
 
   , testProperty
-      "A randomly generated point is valid point. Curve25519"
-      (rndIsPointValid Curve.Curve25519)
+      "A randomly generated point is valid point."
+      (rndIsPointValid curveName)
 
   , testProperty
-      "A generated public key is valid point. Curve25519"
-      (publicKeyIsPointValid Curve.Curve25519)
+      "A generated public key is valid point."
+      (publicKeyIsPointValid curveName)
 
   , testProperty
-      "The result of adding two points is valid point. Curve25519"
-      (pointAddIsPointValid Curve.Curve25519)
+      "The result of adding two points is valid point."
+      (pointAddIsPointValid curveName)
 
   , testProperty
-      "The result of doubling a point is valid point. Curve25519"
-      (pointDoubleIsPointValid Curve.Curve25519)
+      "The result of doubling a point is valid point."
+      (pointDoubleIsPointValid curveName)
 
   , testProperty
-      "The result of multiplying a point by a scalar is valid point. Curve25519"
-      (pointMulIsPointValid Curve.Curve25519)
+      "The result of multiplying a point by a scalar is valid point."
+      (pointMulIsPointValid curveName)
   ]
 
 rndIsPointValid :: Curve.Curve c => c -> Property

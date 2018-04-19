@@ -18,24 +18,21 @@ import           Curve
 
 testSchnorr :: TestTree
 testSchnorr = testGroup "Schnorr Indentification Schemes"
+  [ testSchnorr' $ SECCurve ECC.SEC_p256k1
+  , testSchnorr' Curve25519
+  ]
+
+testSchnorr' :: Curve c => c -> TestTree
+testSchnorr' curveName = testGroup ("Curve: " <> show curveName)
   [ testCaseSteps
-      "Non-interactive. Completeness property. Secp256k1 Curve"
-      (completenessNonInt $ SECCurve ECC.SEC_p256k1)
+      "Non-interactive variant. Completeness property."
+      (completenessNonInt curveName)
 
   , testCaseSteps
-      "Non-interactive. Soundness property. Secp256k1 Curve"
-      (soundnessNonInt $ SECCurve ECC.SEC_p256k1)
+      "Non-interactive variant. Soundness property."
+      (soundnessNonInt curveName)
 
-  , testCaseSteps
-      "Non-interactive. Completeness property. Curve25519 Curve"
-      (completenessNonInt Curve25519)
-
-  , testCaseSteps
-      "Non-interactive. Soundness property. Curve25519 Curve"
-      (soundnessNonInt Curve25519)
-
-  , testProperty "Interactive. Secp256k1 Curve" (interactiveTest $ SECCurve ECC.SEC_p256k1)
-  , testProperty "Interactive. Curve25519 Curve" (interactiveTest Curve25519)
+  , testProperty "Interactive variant." (interactiveTest curveName)
   ]
 
 completenessNonInt :: Curve c => c -> ([Char] -> IO ()) -> IO ()
