@@ -2,6 +2,8 @@
   <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/images/logo-small.png" width="250"/></a>
 </p>
 
+[![CircleCI](https://circleci.com/gh/adjoint-io/schnorr-nizk.svg?style=svg)](https://circleci.com/gh/adjoint-io/schnorr-nizk)
+
 The purpose of the Schnorr protocol is to allow one to prove the knowledge of a discrete logarithm without revealing its value.
 
 Schnorr Identification Scheme
