@@ -49,7 +49,7 @@ testInteractive = do
 ```
 
 Zero Knowledge Proofs
-=====================
+---------------------
 
 A proof of knowledge is an interactive proof in which the prover succeeds in convincing a verifier that the prover knows something.
 
@@ -64,7 +64,7 @@ It is assumed that the verifier is always honest.
 Zero knowledge proofs are a way by which one party can prove to another party that she knows a private value x without exposing any information apart from the fact that she knows the value x.
 
 Schnorr NIZK proof
-==================
+------------------
 
 The original Schnorr identification scheme is made non-interactive through a Fiat-Shamir transformation, assuming that there exists a secure cryptographic hash function (i.e., the so-called random oracle model).
 
@@ -92,14 +92,14 @@ testNonInteractive = do
 ```
 
 Curves
-======
+------
 
 This Schnorr implementation offers support for both SECp256k1 and Curve25519 curves,
 which are Koblitz and Montgomery curves, respectively. Further information about
 these curves can be found in the Uplink docs:
 
-[SECp256k1 curve](https://www.adjoint.io/docs/cryptography.html#id1 "SECp256k1 curve")
-[Curve25519 curve](https://www.adjoint.io/docs/cryptography.html#id2 "Curve25519 curve")
+* [SECp256k1 curve](https://www.adjoint.io/docs/cryptography.html#id1 "SECp256k1 curve")
+* [Curve25519 curve](https://www.adjoint.io/docs/cryptography.html#id2 "Curve25519 curve")
 
 **References**:
 
