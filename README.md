@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/images/logo-small.png" width="250"/></a>
+  <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/assets/logos/logo-small.png" width="250"/></a>
 </p>
 
 [![CircleCI](https://circleci.com/gh/adjoint-io/schnorr-nizk.svg?style=svg)](https://circleci.com/gh/adjoint-io/schnorr-nizk)
