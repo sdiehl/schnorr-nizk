@@ -2,6 +2,9 @@ module Schnorr
   ( generateCommitment
   , computeResponse
   , verify
+
+  , mkChallenge
+  , generateChallenge
   ) where
 
 import           Crypto.Hash
@@ -17,6 +20,8 @@ import           Data.Monoid
 import           Protolude
 
 import qualified Curve
+import NonInteractive (mkChallenge)
+import Interactive (generateChallenge)
 
 -----------------------------------------------------
 -- Schnorr Indentification Scheme - Elliptic Curve

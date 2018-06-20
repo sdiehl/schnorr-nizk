@@ -14,8 +14,6 @@ import           Crypto.Number.Generate     (generateMax)
 import           Crypto.Random.Types (MonadRandom)
 import           Protolude
 
-import           Schnorr
-
 -- | Generate challenge from a given message
 generateChallenge :: MonadRandom m => ByteString -> m Integer
 generateChallenge msg = generateMax (2^BS.length msg - 1)

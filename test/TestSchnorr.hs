@@ -72,8 +72,7 @@ completenessNonInt curveName basePoint step = do
 soundnessNonInt :: Curve c => c -> ECC.Point -> ([Char] -> IO ()) -> IO ()
 soundnessNonInt curveName basePoint step = do
     step "Alice generates private and public keys..."
-    privKey <- generateMax (Curve.n curveName - 1)
-    let pubKey = ECC.pointMul (Curve.curve curveName) privKey basePoint
+    (pubKey, privKey) <- genKeys curveName basePoint
 
     step "Alice also generates private and public commitment values..."
     (pubCommit, _) <- generateCommitment curveName basePoint
