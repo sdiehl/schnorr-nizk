@@ -1,15 +1,11 @@
 module Schnorr
-  ( Challenge
-  , Response
-  , PublicCommitment
-  , PrivateCommitment
-  , generateCommitment
+  ( generateCommitment
   , computeResponse
   , verify
   ) where
 
 import           Crypto.Hash
-import           Crypto.Number.Generate     (generateBetween)
+import           Crypto.Number.Generate     (generateMax)
 import           Crypto.Random.Types (MonadRandom)
 import           Crypto.Number.Serialize    (os2ip)
 import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
@@ -26,44 +22,39 @@ import qualified Curve
 -- Schnorr Indentification Scheme - Elliptic Curve
 -----------------------------------------------------
 
-type Challenge = Integer
-type Response = Integer
-type PublicCommitment = ECC.Point
-type PrivateCommitment = Integer
-
 -- | Compute response from previous generated values:
 -- private commitment value, prover's private key and verifier's challenge
 computeResponse
   :: Curve.Curve c
   => c
-  -> PrivateCommitment
-  -> ECDSA.PrivateKey
-  -> Challenge
-  -> Response
-computeResponse curveName pc pk challenge =
-  pc - ECDSA.private_d pk * challenge `mod` Curve.n curveName
+  -> Integer -- ^ Private commitment
+  -> Integer -- ^ Private key
+  -> Integer -- ^ Challenge
+  -> Integer
+computeResponse curveName privCommit sk challenge =
+  privCommit - sk * challenge `mod` Curve.n curveName
 
 -- | Verify proof given by the prover.
 -- It receives a public key, a commitment, a challenge and a response value.
 verify
   :: Curve.Curve c
   => c
-  -> ECDSA.PublicKey
-  -> PublicCommitment
-  -> Challenge
-  -> Response
+  -> ECC.Point          -- ^ Base point
+  -> ECC.Point          -- ^ Public key
+  -> ECC.Point          -- ^ Public commitment
+  -> Integer            -- ^ Challenge
+  -> Integer            -- ^ Response
   -> Bool
-verify curveName pubKey pubCommit challenge r =
+verify curveName basePoint pubKey pubCommit challenge r =
   verifyPubKey && verifyPubCommit
   where
-    validPoint = Curve.isPointValid curveName (ECDSA.public_q pubKey)
+    validPoint = Curve.isPointValid curveName pubKey
     infinity = Curve.isPointAtInfinity curveName $
-      Curve.pointMul curveName h (ECDSA.public_q pubKey)
+      Curve.pointMul curveName h pubKey
     verifyPubKey = validPoint && not infinity
-    t = Curve.pointAddTwoMuls curveName r g challenge (ECDSA.public_q pubKey)
+    t = Curve.pointAddTwoMuls curveName r basePoint challenge pubKey
     verifyPubCommit = pubCommit == t
     curve = Curve.curve curveName
-    g = Curve.g curveName
     h = Curve.h curveName
 
 -- | Generate random commitment value
@@ -72,8 +63,9 @@ verify curveName pubKey pubCommit challenge r =
 generateCommitment
   :: (MonadRandom m, Curve.Curve c)
   => c
-  -> m (PublicCommitment, PrivateCommitment)
-generateCommitment curveName = do
-  k <- generateBetween 0 (Curve.n curveName - 1)
-  let k' = Curve.pointBaseMul curveName k
+  -> ECC.Point    -- ^ Base point
+  -> m (ECC.Point, Integer)
+generateCommitment curveName basePoint = do
+  k <- generateMax (Curve.n curveName - 1)
+  let k' = Curve.pointMul curveName k basePoint
   pure (k', k)

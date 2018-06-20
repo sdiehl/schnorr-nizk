@@ -10,12 +10,12 @@ module Interactive (
   generateChallenge,
 ) where
 import qualified Data.ByteString as BS
-import           Crypto.Number.Generate     (generateBetween)
+import           Crypto.Number.Generate     (generateMax)
 import           Crypto.Random.Types (MonadRandom)
 import           Protolude
 
 import           Schnorr
 
 -- | Generate challenge from a given message
-generateChallenge :: MonadRandom m => ByteString -> m Challenge
-generateChallenge msg = generateBetween 0  (2^BS.length msg - 1)
+generateChallenge :: MonadRandom m => ByteString -> m Integer
+generateChallenge msg = generateMax (2^BS.length msg - 1)

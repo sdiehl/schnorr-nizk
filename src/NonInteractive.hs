@@ -33,14 +33,15 @@ appendCoordinates (ECC.Point x y) = show x <> show y
 mkChallenge
   :: Curve.Curve c
   => c
-  -> ECDSA.PublicKey
-  -> ECC.Point
+  -> ECC.Point      -- ^ Base point
+  -> ECC.Point      -- ^ Public key
+  -> ECC.Point      -- ^ Public commitment
   -> Integer
-mkChallenge curveName pubKey pubCommit = oracle curveName (gxy <> cxy <> pxy)
+mkChallenge curveName basePoint pubKey pubCommit = oracle curveName (gxy <> cxy <> pxy)
   where
-    gxy = appendCoordinates (Curve.g curveName)
+    gxy = appendCoordinates basePoint
     cxy = appendCoordinates pubCommit
-    pxy = (appendCoordinates . ECDSA.public_q) pubKey
+    pxy = appendCoordinates pubKey
 
 -- | A “random oracle” is considered to be a black box that
 -- outputs unpredictable but deterministic random values in
