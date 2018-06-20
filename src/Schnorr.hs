@@ -5,6 +5,7 @@ module Schnorr
 
   , mkChallenge
   , generateChallenge
+  , SECCurve(..)
   ) where
 
 import           Crypto.Hash
@@ -22,7 +23,7 @@ import           Protolude
 import qualified Curve
 import NonInteractive (mkChallenge)
 import Interactive (generateChallenge)
-
+import Curve (SECCurve(..))
 -----------------------------------------------------
 -- Schnorr Indentification Scheme - Elliptic Curve
 -----------------------------------------------------
