@@ -46,7 +46,7 @@ verify
   -> Integer            -- ^ Response
   -> Bool
 verify curveName basePoint pubKey pubCommit challenge r =
-  True
+  verifyPubKey && verifyPubCommit
   where
     validPoint = Curve.isPointValid curveName pubKey
     infinity = Curve.isPointAtInfinity curveName $
