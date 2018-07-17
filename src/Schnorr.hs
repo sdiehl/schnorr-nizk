@@ -1,11 +1,8 @@
+{-# LANGUAGE RecordWildCards #-}
 module Schnorr
-  ( generateCommitment
-  , computeResponse
+  ( prove
   , verify
-
-  , mkChallenge
-  , generateChallenge
-  , SECCurve(..)
+  , Curve.SECCurve(..)
   ) where
 
 import           Crypto.Hash
@@ -20,58 +17,54 @@ import qualified Data.ByteString            as BS
 import           Data.Monoid
 import           Protolude
 
-import qualified Curve
-import NonInteractive (mkChallenge)
-import Interactive (generateChallenge)
-import Curve (SECCurve(..))
+import qualified Schnorr.Curve as Curve
+import Schnorr.Internal
+
 -----------------------------------------------------
 -- Schnorr Indentification Scheme - Elliptic Curve
 -----------------------------------------------------
 
--- | Compute response from previous generated values:
--- private commitment value, prover's private key and verifier's challenge
-computeResponse
-  :: Curve.Curve c
-  => c
-  -> Integer -- ^ Private commitment
-  -> Integer -- ^ Private key
-  -> Integer -- ^ Challenge
-  -> Integer
-computeResponse curveName privCommit sk challenge =
-  privCommit - sk * challenge `mod` Curve.n curveName
+data NIZK
+  = NIZK
+    { t :: ECC.Point
+    , c :: Integer
+    , s :: Integer
+    }
 
 -- | Verify proof given by the prover.
--- It receives a public key, a commitment, a challenge and a response value.
 verify
   :: Curve.Curve c
   => c
   -> ECC.Point          -- ^ Base point
   -> ECC.Point          -- ^ Public key
-  -> ECC.Point          -- ^ Public commitment
-  -> Integer            -- ^ Challenge
-  -> Integer            -- ^ Response
+  -> NIZK
   -> Bool
-verify curveName basePoint pubKey pubCommit challenge r =
+verify curveName basePoint pk NIZK{..} =
   verifyPubKey && verifyPubCommit
   where
-    validPoint = Curve.isPointValid curveName pubKey
+    validPoint = Curve.isPointValid curveName pk
     infinity = Curve.isPointAtInfinity curveName $
-      Curve.pointMul curveName h pubKey
+      Curve.pointMul curveName h pk
     verifyPubKey = validPoint && not infinity
-    t = Curve.pointAddTwoMuls curveName r basePoint challenge pubKey
-    verifyPubCommit = pubCommit == t
+    t' = Curve.pointAddTwoMuls curveName s basePoint c pk
+    verifyPubCommit = t == t'
     curve = Curve.curve curveName
     h = Curve.h curveName
 
--- | Generate random commitment value
--- The prover keeps the random value generated safe
--- while sharing the point in the curve obtained by multiplying G * [k]
-generateCommitment
+prove
   :: (MonadRandom m, Curve.Curve c)
   => c
-  -> ECC.Point    -- ^ Base point
-  -> m (ECC.Point, Integer)
-generateCommitment curveName basePoint = do
-  k <- generateMax (Curve.n curveName - 1)
-  let k' = Curve.pointMul curveName k basePoint
-  pure (k', k)
+  -> ECC.Point
+  -> (ECC.Point, Integer)
+  -> m NIZK
+prove curveName basePoint (pk, sk) = do
+  (pubCommit, privCommit) <- genCommitment curveName basePoint
+  let challenge = genChallenge curveName basePoint pk pubCommit
+      resp = computeResponse curveName privCommit sk challenge
+  pure NIZK
+    { t = pubCommit
+    , c = challenge
+    , s = resp
+    }
+
+

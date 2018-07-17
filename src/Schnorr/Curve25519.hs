@@ -1,4 +1,4 @@
-module Curve25519
+module Schnorr.Curve25519
   ( curve25519
   , isPointValid
   , pointMul

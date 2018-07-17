@@ -1,8 +1,4 @@
-module Curve
-  ( Curve(..)
-  , Curve25519(..)
-  , SECCurve(..)
-  ) where
+module Schnorr.Curve where
 
 import qualified Crypto.PubKey.ECC.Generate   as ECC
 import qualified Crypto.PubKey.ECC.Prim       as ECC
@@ -11,7 +7,7 @@ import qualified Crypto.PubKey.ECC.ECDSA      as ECDSA
 import           Crypto.Random.Types          (MonadRandom)
 import           Protolude
 
-import qualified Curve25519
+import qualified Schnorr.Curve25519 as Curve25519
 
 data Curve25519 = Curve25519 deriving Show
 newtype SECCurve = SECCurve { unSEC :: ECC.CurveName } deriving Show

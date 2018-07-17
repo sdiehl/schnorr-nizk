@@ -13,8 +13,8 @@ import qualified Crypto.PubKey.ECC.Types as ECC
 import qualified Crypto.PubKey.ECC.Generate as ECC
 import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
 
-import qualified Curve
-import qualified Curve25519
+import qualified Schnorr.Curve as Curve
+import qualified Schnorr.Curve25519 as Curve25519
 
 testCurveOps :: TestTree
 testCurveOps = testGroup "Curve operations"

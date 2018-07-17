@@ -11,7 +11,7 @@ import qualified Crypto.PubKey.ECC.Generate as ECC
 import qualified Crypto.PubKey.ECC.Prim as ECC
 import qualified Crypto.PubKey.ECC.Types as ECC
 
-import Curve
+import Schnorr.Curve
 import GroupLaws
 
 genPoint :: ECC.Curve -> Gen ECC.Point
