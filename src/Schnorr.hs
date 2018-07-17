@@ -41,15 +41,15 @@ verify
   -> NIZK
   -> Bool
 verify curveName basePoint pk NIZK{..} =
-  verifyPubKey && verifyPubCommit
+  checkPubKey && checkPubCommit && checkChallenge
   where
+    checkPubKey = validPoint && not infinity
+    checkPubCommit = t == Curve.pointAddTwoMuls curveName s basePoint c pk
+    checkChallenge = c == genChallenge curveName basePoint pk t
+
     validPoint = Curve.isPointValid curveName pk
     infinity = Curve.isPointAtInfinity curveName $
       Curve.pointMul curveName h pk
-    verifyPubKey = validPoint && not infinity
-    t' = Curve.pointAddTwoMuls curveName s basePoint c pk
-    verifyPubCommit = t == t'
-    curve = Curve.curve curveName
     h = Curve.h curveName
 
 prove
