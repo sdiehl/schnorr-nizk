@@ -60,7 +60,9 @@ An example of the Schnorr protocol for Non-Interactive Zero-Knowledge Proofs loo
 testSchnorrNIZK :: IO Bool
 testSchnorrNIZK = do
   -- Setup
-  keyPair@(pk, sk) <- generateKeys
+  let curveName = Curve25519
+      basePoint = Curve.g curveName
+  keyPair@(pk, sk) <- genKeys curveName basePoint
 
   -- Prover
   proof <- Schnorr.prove curveName basePoint keyPair
