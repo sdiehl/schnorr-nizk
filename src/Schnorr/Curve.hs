@@ -24,7 +24,6 @@ class (Show a) => Curve a where
   pointAdd :: a -> ECC.Point -> ECC.Point -> ECC.Point
   pointNegate :: a -> ECC.Point -> ECC.Point
   pointDouble :: a -> ECC.Point -> ECC.Point
-  generateQ :: a -> Integer -> ECC.Point
   generateKeys :: MonadRandom m => a -> m (ECDSA.PublicKey, ECDSA.PrivateKey)
   isPointAtInfinity :: a -> ECC.Point -> Bool
   pointAddTwoMuls :: a -> Integer -> ECC.Point -> Integer -> ECC.Point -> ECC.Point
@@ -42,7 +41,6 @@ instance Curve SECCurve where
   pointAdd = ECC.pointAdd . curve
   pointNegate = ECC.pointNegate . curve
   pointDouble = ECC.pointDouble . curve
-  generateQ = ECC.generateQ . curve
   generateKeys = ECC.generate . curve
   isPointAtInfinity = const ECC.isPointAtInfinity
   pointAddTwoMuls = ECC.pointAddTwoMuls . curve
@@ -60,7 +58,6 @@ instance Curve Curve25519 where
   pointAdd = Curve25519.pointAdd . curve
   pointNegate = Curve25519.pointNegate . curve
   pointDouble = Curve25519.pointDouble . curve
-  generateQ = Curve25519.generateQ . curve
   generateKeys = Curve25519.generateKeys . curve
   isPointAtInfinity = const ECC.isPointAtInfinity
   pointAddTwoMuls = Curve25519.pointAddTwoMuls . curve

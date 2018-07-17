@@ -3,6 +3,7 @@ module Schnorr
   ( prove
   , verify
   , Curve.SECCurve(..)
+  , NIZK(..)
   ) where
 
 import           Crypto.Hash
@@ -29,7 +30,7 @@ data NIZK
     { t :: ECC.Point
     , c :: Integer
     , s :: Integer
-    }
+    } deriving (Show, Eq)
 
 -- | Verify proof given by the prover.
 verify

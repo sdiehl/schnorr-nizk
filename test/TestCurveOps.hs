@@ -52,7 +52,7 @@ testCurveOps' curveName = testGroup ("Curve: " <> show curveName)
 rndIsPointValid :: Curve.Curve c => c -> Property
 rndIsPointValid curveName = monadicIO $ do
   d <- liftIO $ generateBetween 1 (Curve.n curveName - 1)
-  let point = Curve.generateQ curveName d
+  let point = Curve.pointBaseMul curveName d
   pure $ Curve.isPointValid curveName point
 
 publicKeyIsPointValid :: Curve.Curve c => c -> Property
@@ -68,10 +68,10 @@ pointAddIsPointValid :: Curve.Curve c => c -> Property
 pointAddIsPointValid curveName = monadicIO $ do
   -- Generate point 1
   d1 <- liftIO $ generateBetween 1 (Curve.n curveName - 1)
-  let p1 = Curve.generateQ curveName d1
+  let p1 = Curve.pointBaseMul curveName d1
   -- Generate point 2
   d2 <- liftIO $  generateBetween 1 (Curve.n curveName - 1)
-  let p2 = Curve.generateQ curveName d2
+  let p2 = Curve.pointBaseMul curveName d2
 
   let result = Curve.pointAdd curveName p1 p2
   pure $ Curve.isPointValid curveName result
@@ -80,7 +80,7 @@ pointDoubleIsPointValid :: Curve.Curve c => c -> Property
 pointDoubleIsPointValid curveName = monadicIO $ do
   -- Generate point
   d <- liftIO $ generateBetween 1 (Curve.n curveName - 1)
-  let p = Curve.generateQ curveName d
+  let p = Curve.pointBaseMul curveName d
   let result = Curve.pointAdd curveName p p
   pure $ Curve.isPointValid curveName result
 
@@ -91,7 +91,7 @@ pointMulIsPointValid curveName = monadicIO $ do
 
   -- Generate point
   d <- liftIO $  generateBetween 1 (Curve.n curveName - 1)
-  let p = Curve.generateQ curveName d
+  let p = Curve.pointBaseMul curveName d
 
   let result = Curve.pointMul curveName m p
   pure $ Curve.isPointValid curveName result

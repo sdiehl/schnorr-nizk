@@ -7,7 +7,6 @@ module Schnorr.Curve25519
   , pointDouble
   , pointAddTwoMuls
   , pointBaseMul
-  , generateQ
   , generateKeys
   ) where
 
@@ -149,15 +148,6 @@ pointAddTwoMuls c n1 p1     n2 p2
 pointBaseMul :: ECC.Curve -> Integer -> ECC.Point
 pointBaseMul c n = pointMul c n (ECC.ecc_g $ ECC.common_curve c)
 
--- | Generate Q given d.
---
--- /WARNING:/ Vulnerable to timing attacks.
-generateQ :: ECC.Curve
-          -> Integer
-          -> ECC.Point
-generateQ curve d = pointMul curve d g
-  where g = ECC.ecc_g $ ECC.common_curve curve
-
 -- | Generate a pair of (private, public) key.
 --
 -- /WARNING:/ Vulnerable to timing attacks.
@@ -166,7 +156,7 @@ generateKeys :: MonadRandom m
          -> m (ECDSA.PublicKey, ECDSA.PrivateKey)
 generateKeys curve = do
     d <- generateBetween 1 (n - 1)
-    let q = generateQ curve d
+    let q = pointBaseMul curve d
     return (ECDSA.PublicKey curve q, ECDSA.PrivateKey curve d)
   where
         n = ECC.ecc_n $ ECC.common_curve curve

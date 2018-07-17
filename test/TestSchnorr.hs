@@ -18,15 +18,14 @@ import           Schnorr.Curve as Curve
 
 testSchnorr :: TestTree
 testSchnorr = testGroup "Schnorr Indentification Schemes"
-  [
-  {-testSchnorr' $ SECCurve ECC.SEC_p256k1-}
-   testSchnorr' Curve25519
+  [ testSchnorr' $ SECCurve ECC.SEC_p256k1
+  , testSchnorr' Curve25519
   ]
 
 genKeys :: (MonadRandom m, Curve c) => c -> ECC.Point -> m (ECC.Point, Integer)
 genKeys curveName basePoint = do
-  sk <- ECC.scalarGenerate (Curve.curve curveName)
-  let pk = ECC.pointMul (Curve.curve curveName) sk basePoint
+  sk <- generateMax (Curve.n curveName)
+  let pk = Curve.pointMul curveName sk basePoint
   pure (pk, sk)
 
 testSchnorr' :: Curve c => c -> TestTree
@@ -41,11 +40,9 @@ testSchnorr' curveName = testGroup ("Curve: " <> show curveName)
 
 prop_completenessNIZK :: Curve c => c -> Property
 prop_completenessNIZK curveName = QCM.monadicIO $ do
-  {-(basePoint, _) <- QCM.run $ genKeys curveName (Curve.g curveName)-}
-  let basePoint = Curve.g curveName
+  (basePoint, _) <- QCM.run $ genKeys curveName (Curve.g curveName)
   keyPair@(pk, sk) <- QCM.run $ genKeys curveName basePoint
   proof <- QCM.run $ Schnorr.prove curveName basePoint keyPair
-
   QCM.assert $ Schnorr.verify curveName basePoint pk proof
 
 prop_soundnessNIZK :: Curve c => c -> Property
