@@ -43,7 +43,7 @@ prop_completenessNIZK curveName = QCM.monadicIO $ do
   (basePoint, _) <- QCM.run $ genKeys curveName (Curve.g curveName)
   keyPair@(pk, sk) <- QCM.run $ genKeys curveName basePoint
   proof <- QCM.run $ Schnorr.prove curveName basePoint keyPair
-  QCM.assert $ verify curveName basePoint pk proof
+  QCM.assert $ Schnorr.verify curveName basePoint pk proof
 
 prop_soundnessNIZK :: Curve c => c -> Property
 prop_soundnessNIZK curveName = QCM.monadicIO $ do
@@ -51,4 +51,4 @@ prop_soundnessNIZK curveName = QCM.monadicIO $ do
   keyPair@(pk, sk) <- QCM.run $ genKeys curveName basePoint
   invalidSk <- QCM.run $ ECC.scalarGenerate (Curve.curve curveName)
   proof <- QCM.run $ Schnorr.prove curveName basePoint (pk, invalidSk)
-  QCM.assert $ not $ verify curveName basePoint pk proof
+  QCM.assert $ not $ Schnorr.verify curveName basePoint pk proof

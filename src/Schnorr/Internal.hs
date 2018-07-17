@@ -1,11 +1,3 @@
--- | Non interactive variant of the Schnorr protocol
---
--- >>> (pubKey, privKey) <- generateKeys -- prover
--- >>> (pubCommit, privCommit) <- generateCommitment -- prover
--- >>> let challenge = mkChallenge pubKey pubCommit
--- >>> let r = computeResponse privCommit privKey challenge -- prover
--- >>> verify pubKey pubCommit challenge r -- verifier
--- True
 module Schnorr.Internal where
 
 import           Protolude                  hiding (hash)
