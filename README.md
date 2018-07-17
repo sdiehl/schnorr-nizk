@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/assets/logos/logo-small.png" width="250"/></a>
+  <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/assets/img/adjoint-logo@2x.png" width="250"/></a>
 </p>
 
 [![CircleCI](https://circleci.com/gh/adjoint-io/schnorr-nizk.svg?style=svg)](https://circleci.com/gh/adjoint-io/schnorr-nizk)
@@ -9,13 +9,15 @@ The purpose of the Schnorr protocol is to allow one to prove the knowledge of a 
 Schnorr Identification Scheme
 =============================
 
-The Schnorr protocol is an example of a Sigma protocol. A Sigma protocol is a three-step protocol in which communication between prover and verifier goes forwards once, then backwards, then forwards again. In general terms:
+The Schnorr protocol is an example of a Sigma protocol.
+A Sigma protocol is a three-step protocol in which communication between prover and verifier goes forwards once, then backwards, then forwards again.
+In general terms:
 
 - `P  ->  V`:  commitment
 - `V  ->  P`:  challenge
 - `P  ->  V`:  response (proof)
 
-The Schnorr identification scheme runs interactively between the prover and the verifier. The protocol is defined for a cyclic group of order `n` with generator `G`.
+The protocol is defined for a cyclic group of order `n`.
 
 The prover aims to convince the verifier that he knows some value `a`. Let `a` be her private key. Therefore, `P = G * [a]`**[1]** will be her public key. In order to prove knowledge of it, the prover interacts with the verifier in three passes:
 
