@@ -15,7 +15,8 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests"
-  [ testGroupLaws
-  , testCurveOps
-  , testSchnorr
+  [
+    {-testGroupLaws-}
+  {-, testCurveOps-}
+   testSchnorr
   ]

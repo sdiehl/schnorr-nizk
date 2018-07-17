@@ -3,7 +3,7 @@ module Schnorr.Internal where
 import           Protolude                  hiding (hash)
 import           Crypto.Hash
 import           Crypto.Random.Types (MonadRandom)
-import           Crypto.Number.Generate     (generateMax)
+import qualified Crypto.PubKey.ECC.Prim as ECC
 import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
 import qualified Crypto.PubKey.ECC.Types    as ECC
 import           Crypto.Number.Serialize    (os2ip)
@@ -22,7 +22,7 @@ genCommitment
   -> ECC.Point    -- ^ Base point
   -> m (ECC.Point, Integer)
 genCommitment curveName basePoint = do
-  k <- generateMax (Curve.n curveName - 1)
+  k <- ECC.scalarGenerate (Curve.curve curveName)
   let k' = Curve.pointMul curveName k basePoint
   pure (k', k)
 -- | Make challenge through a Fiat-Shamir transformation.
@@ -51,7 +51,7 @@ computeResponse
   -> Integer -- ^ Challenge
   -> Integer
 computeResponse curveName privCommit sk challenge =
-  privCommit - sk * challenge `mod` Curve.n curveName
+  (privCommit - sk * challenge) `mod` Curve.n curveName
 
 -- | A “random oracle” is considered to be a black box that
 -- outputs unpredictable but deterministic random values in
