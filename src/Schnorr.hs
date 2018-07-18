@@ -4,7 +4,7 @@ module Schnorr
   , verify
   , Curve.SECCurve(..)
   , Curve.Curve25519(..)
-  , NIZK(..)
+  , NIZKProof(..)
   ) where
 
 import           Crypto.Hash
@@ -26,8 +26,8 @@ import Schnorr.Internal
 -- Schnorr Indentification Scheme - Elliptic Curve
 -----------------------------------------------------
 
-data NIZK
-  = NIZK
+data NIZKProof
+  = NIZKProof
     { t :: ECC.Point
     , c :: Integer
     , s :: Integer
@@ -39,9 +39,9 @@ verify
   => c
   -> ECC.Point          -- ^ Base point
   -> ECC.Point          -- ^ Public key
-  -> NIZK
+  -> NIZKProof
   -> Bool
-verify curveName basePoint pk NIZK{..} =
+verify curveName basePoint pk NIZKProof{..} =
   checkPubKey && checkPubCommit && checkChallenge
   where
     checkPubKey = validPoint && not infinity
@@ -58,12 +58,12 @@ prove
   => c
   -> ECC.Point
   -> (ECC.Point, Integer)
-  -> m NIZK
+  -> m NIZKProof
 prove curveName basePoint (pk, sk) = do
   (pubCommit, privCommit) <- genCommitment curveName basePoint
   let challenge = genChallenge curveName basePoint pk pubCommit
       resp = computeResponse curveName privCommit sk challenge
-  pure NIZK
+  pure NIZKProof
     { t = pubCommit
     , c = challenge
     , s = resp
