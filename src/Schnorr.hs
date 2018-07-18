@@ -3,6 +3,7 @@ module Schnorr
   ( prove
   , verify
   , Curve.SECCurve(..)
+  , Curve.Curve25519(..)
   , NIZK(..)
   ) where
 
