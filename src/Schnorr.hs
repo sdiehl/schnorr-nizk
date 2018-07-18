@@ -1,15 +1,14 @@
+{-# LANGUAGE RecordWildCards #-}
 module Schnorr
-  ( Challenge
-  , Response
-  , PublicCommitment
-  , PrivateCommitment
-  , generateCommitment
-  , computeResponse
+  ( prove
   , verify
+  , Curve.SECCurve(..)
+  , Curve.Curve25519(..)
+  , NIZKProof(..)
   ) where
 
 import           Crypto.Hash
-import           Crypto.Number.Generate     (generateBetween)
+import           Crypto.Number.Generate     (generateMax)
 import           Crypto.Random.Types (MonadRandom)
 import           Crypto.Number.Serialize    (os2ip)
 import qualified Crypto.PubKey.ECC.ECDSA    as ECDSA
@@ -20,60 +19,54 @@ import qualified Data.ByteString            as BS
 import           Data.Monoid
 import           Protolude
 
-import qualified Curve
+import qualified Schnorr.Curve as Curve
+import Schnorr.Internal
 
 -----------------------------------------------------
 -- Schnorr Indentification Scheme - Elliptic Curve
 -----------------------------------------------------
 
-type Challenge = Integer
-type Response = Integer
-type PublicCommitment = ECC.Point
-type PrivateCommitment = Integer
-
--- | Compute response from previous generated values:
--- private commitment value, prover's private key and verifier's challenge
-computeResponse
-  :: Curve.Curve c
-  => c
-  -> PrivateCommitment
-  -> ECDSA.PrivateKey
-  -> Challenge
-  -> Response
-computeResponse curveName pc pk challenge =
-  pc - ECDSA.private_d pk * challenge `mod` Curve.n curveName
+data NIZKProof
+  = NIZKProof
+    { t :: ECC.Point
+    , c :: Integer
+    , s :: Integer
+    } deriving (Show, Eq)
 
 -- | Verify proof given by the prover.
--- It receives a public key, a commitment, a challenge and a response value.
 verify
   :: Curve.Curve c
   => c
-  -> ECDSA.PublicKey
-  -> PublicCommitment
-  -> Challenge
-  -> Response
+  -> ECC.Point          -- ^ Base point
+  -> ECC.Point          -- ^ Public key
+  -> NIZKProof
   -> Bool
-verify curveName pubKey pubCommit challenge r =
-  verifyPubKey && verifyPubCommit
+verify curveName basePoint pk NIZKProof{..} =
+  checkPubKey && checkPubCommit && checkChallenge
   where
-    validPoint = Curve.isPointValid curveName (ECDSA.public_q pubKey)
+    checkPubKey = validPoint && not infinity
+    checkPubCommit = t == Curve.pointAddTwoMuls curveName s basePoint c pk
+    checkChallenge = c == genChallenge curveName basePoint pk t
+
+    validPoint = Curve.isPointValid curveName pk
     infinity = Curve.isPointAtInfinity curveName $
-      Curve.pointMul curveName h (ECDSA.public_q pubKey)
-    verifyPubKey = validPoint && not infinity
-    t = Curve.pointAddTwoMuls curveName r g challenge (ECDSA.public_q pubKey)
-    verifyPubCommit = pubCommit == t
-    curve = Curve.curve curveName
-    g = Curve.g curveName
+      Curve.pointMul curveName h pk
     h = Curve.h curveName
 
--- | Generate random commitment value
--- The prover keeps the random value generated safe
--- while sharing the point in the curve obtained by multiplying G * [k]
-generateCommitment
+prove
   :: (MonadRandom m, Curve.Curve c)
   => c
-  -> m (PublicCommitment, PrivateCommitment)
-generateCommitment curveName = do
-  k <- generateBetween 0 (Curve.n curveName - 1)
-  let k' = Curve.pointBaseMul curveName k
-  pure (k', k)
+  -> ECC.Point
+  -> (ECC.Point, Integer)
+  -> m NIZKProof
+prove curveName basePoint (pk, sk) = do
+  (pubCommit, privCommit) <- genCommitment curveName basePoint
+  let challenge = genChallenge curveName basePoint pk pubCommit
+      resp = computeResponse curveName privCommit sk challenge
+  pure NIZKProof
+    { t = pubCommit
+    , c = challenge
+    , s = resp
+    }
+
+

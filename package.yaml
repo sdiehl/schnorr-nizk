@@ -68,11 +68,9 @@ library:
 
   exposed-modules:
     - Schnorr
-    - Curve
-    - NonInteractive
-    - Interactive
-    - Curve25519
-
+    - Schnorr.Curve
+    - Schnorr.Curve25519
+    - Schnorr.Internal
 
 tests:
   schnorr-nizk-test:
