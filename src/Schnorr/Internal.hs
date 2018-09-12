@@ -11,7 +11,7 @@ import qualified Data.ByteArray             as BA
 import           Data.ByteString
 import           Data.Monoid
 
-import qualified Schnorr.Curve as Curve
+import Schnorr.Curve as Curve
 
 -- | Generate random commitment value
 -- The prover keeps the random value generated safe
@@ -25,6 +25,7 @@ genCommitment curveName basePoint = do
   k <- ECC.scalarGenerate (Curve.curve curveName)
   let k' = Curve.pointMul curveName k basePoint
   pure (k', k)
+
 -- | Make challenge through a Fiat-Shamir transformation.
 -- The challenge is then defined as `H(g || V || A)`,
 -- where `H` is a secure cryptographic hash function (SHA-256).
@@ -35,7 +36,20 @@ genChallenge
   -> ECC.Point      -- ^ Public key
   -> ECC.Point      -- ^ Public commitment
   -> Integer
-genChallenge curveName basePoint pubKey pubCommit = oracle curveName (gxy <> cxy <> pxy)
+genChallenge curveName basePoint pubKey pubCommit
+  = genChallengeWithMsg curveName basePoint pubKey pubCommit ""
+
+-- | Generate a challenge defined as `H(g || V || A || msg)`
+genChallengeWithMsg
+  :: Curve c
+  => c
+  -> ECC.Point
+  -> ECC.Point
+  -> ECC.Point
+  -> ByteString
+  -> Integer
+genChallengeWithMsg curveName basePoint pubKey pubCommit msg
+  = oracle curveName (gxy <> cxy <> pxy <> msg)
   where
     gxy = appendCoordinates basePoint
     cxy = appendCoordinates pubCommit
