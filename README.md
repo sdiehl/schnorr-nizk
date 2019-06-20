@@ -85,6 +85,7 @@ these curves can be found in the Uplink docs:
 **References**:
 
 1.  Hao, F. "Schnorr Non-interactive Zero-Knowledge Proof." Newcastle University, UK, 2017
+2. Schnorr Non-interactive Zero-Knowledge Proof [https://tools.ietf.org/html/rfc8235](https://tools.ietf.org/html/rfc8235)
 
 
 **Notation**:
