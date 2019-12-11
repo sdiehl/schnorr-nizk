@@ -1,13 +1,14 @@
 <p align="center">
-  <a href="http://www.adjoint.io"><img src="https://www.adjoint.io/assets/img/adjoint-logo@2x.png" width="250"/></a>
+<a href="https://www.adjoint.io">
+  <img width="250" src="./.assets/adjoint.png" alt="Adjoint Logo" />
+</a>
 </p>
 
 [![CircleCI](https://circleci.com/gh/adjoint-io/schnorr-nizk.svg?style=svg)](https://circleci.com/gh/adjoint-io/schnorr-nizk)
 
 The purpose of the Schnorr protocol is to allow one to prove the knowledge of a discrete logarithm without revealing its value.
 
-Schnorr Identification Scheme
-=============================
+## Schnorr Identification Scheme
 
 The Schnorr protocol is an example of a Sigma protocol.
 A Sigma protocol is a three-step protocol in which communication between prover and verifier goes forwards once, then backwards, then forwards again.
@@ -32,8 +33,7 @@ The verifier accepts, if:
 
 - The prover's commitment value is equal to `G * [r] + P * [challenge]`
 
-Zero Knowledge Proofs
----------------------
+## Zero Knowledge Proofs
 
 Zero knowledge proofs are a way by which one party succeeds in convincing another party that she knows a private value x without exposing any information apart from the fact that she knows the value x.
 
@@ -46,8 +46,7 @@ All proof systems have two requirements:
 It is assumed that the verifier is always honest.
 
 
-Schnorr NIZK proof
-------------------
+## Schnorr NIZK proof
 
 The original Schnorr identification scheme is made non-interactive through a Fiat-Shamir transformation, assuming that there exists a secure cryptographic hash function (i.e., the so-called random oracle model).
 
@@ -72,8 +71,7 @@ testSchnorrNIZK = do
 
 ```
 
-Curves
-------
+## Curves
 
 This Schnorr implementation offers support for both SECp256k1 and Curve25519 curves,
 which are Koblitz and Montgomery curves, respectively. Further information about
@@ -92,11 +90,15 @@ these curves can be found in the Uplink docs:
 
 1. `P * [b]`: multiplication of a point P with a scalar b over an elliptic curve defined over a finite field modulo a prime number
 
-License
--------
+## Disclaimer
+
+This is experimental code meant for research-grade projects only. Please do not
+use this code in production until it has matured significantly.
+
+## License
 
 ```
-Copyright 2018-2019 Adjoint Inc
+Copyright 2018-2020 Adjoint Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
