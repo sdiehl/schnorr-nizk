@@ -45,7 +45,6 @@ All proof systems have two requirements:
 
 It is assumed that the verifier is always honest.
 
-
 ## Schnorr NIZK proof
 
 The original Schnorr identification scheme is made non-interactive through a Fiat-Shamir transformation, assuming that there exists a secure cryptographic hash function (i.e., the so-called random oracle model).
