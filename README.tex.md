@@ -22,22 +22,23 @@ general terms:
 The protocol is defined for a cyclic group of order $n$.
 
 The prover aims to convince the verifier that he knows some private value $a$.
-Therefore, $P = G * [a]$ (see [1]) will be her public key. In order to prove
+Therefore, $P = G \cdot [a]$ (see [1]) will be her public key. In order to prove
 knowledge of it, the prover interacts with the verifier in three passes:
 
-- The prover commits to a random private value $v$, chosen in the range $[1, n-1]$. This is the first message commitment $c = G * [v]$.
+- The prover commits to a random private value $v$, chosen in the range $[1,
+  n-1]$. This is the first message commitment $c = G \cdot [v]$.
 
 - The verifier replies with a `challenge` chosen at random from $[0, 2^t - 1]$.
 
 - After receiving the `challenge`, the prover sends the third and last message
-  (the response) $r = (v - c * a)\ \text{mod}\ n$.
+  (the response) $r = (v - c \cdot a)\ \text{mod}\ n$.
 
 The verifier accepts, if:
 
 - The prover's public key, $P$, is a valid public key. It means that it must be
-  a valid point on the curve and $P * [h]$ is not a point at infinity, where $h$
-  is the cofactor of the curve.
-- The prover's commitment value is equal to $G * [r] + P * [c]$
+  a valid point on the curve and $P \cdot [h]$ is not a point at infinity, where
+  $h$ is the cofactor of the curve.
+- The prover's commitment value is equal to $G \cdot [r] + P \cdot [c]$
 
 ## Zero Knowledge Proofs
 
@@ -85,7 +86,7 @@ testSchnorrNIZK = do
   proof <- Schnorr.prove curveName basePoint keyPair
 
   -- Verifier
-  pure $ Schnorr.verify curveName basePoint pk proof
+  pure (Schnorr.verify curveName basePoint pk proof)
 ```
 
 ## Curves
@@ -103,7 +104,7 @@ curves, which are Koblitz and Montgomery curves, respectively.
 
 **Notation**:
 
-1. $P * [b]$ : multiplication of a point $P$ with a scalar $b$ over an elliptic
+1. $P \cdot [b]$ : multiplication of a point $P$ with a scalar $b$ over an elliptic
    curve defined over a finite field modulo a prime number
 
 ## Disclaimer
