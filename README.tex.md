@@ -15,47 +15,65 @@ Sigma protocol is a three-step protocol in which communication between prover
 and verifier goes forwards once, then backwards, then forwards again.  In
 general terms:
 
-- `P  ->  V`:  commitment
-- `V  ->  P`:  challenge
-- `P  ->  V`:  response (proof)
+- $P  \rightarrow V$:  commitment
+- $V  \rightarrow P$:  challenge
+- $P  \rightarrow V$:  response (proof)
 
-The protocol is defined for a cyclic group of order `n`.
+The protocol is defined for a cyclic group of order $n$.
 
-The prover aims to convince the verifier that he knows some private value `a`. Therefore, `P = G * [a]`**[1]** will be her public key. In order to prove knowledge of it, the prover interacts with the verifier in three passes:
+The prover aims to convince the verifier that he knows some private value $a$.
+Therefore, $P = G * [a]$ (see [1]) will be her public key. In order to prove
+knowledge of it, the prover interacts with the verifier in three passes:
 
-- The prover commits to a random private value `v`, chosen in the range `[1, n-1]`. This is the first message `commitment = G * [v]`.
+- The prover commits to a random private value $v$, chosen in the range $[1, n-1]$. This is the first message commitment $c = G * [v]$.
 
-- The verifier replies with a `challenge` chosen at random from `[0, 2^t - 1]`.
+- The verifier replies with a `challenge` chosen at random from $[0, 2^t - 1]$.
 
-- After receiving the `challenge`, the prover sends the third and last message (the response) `resp = (v - challenge * a) mod n`.
+- After receiving the `challenge`, the prover sends the third and last message
+  (the response) $r = (v - c * a)\ \text{mod}\ n$.
 
 The verifier accepts, if:
-- The prover's public key, `P`, is a valid public key. It means that it must be a valid point on the curve and `P * [h]` is not a point at infinity, where `h` is the cofactor of the curve.
 
-- The prover's commitment value is equal to `G * [r] + P * [challenge]`
+- The prover's public key, $P$, is a valid public key. It means that it must be
+  a valid point on the curve and $P * [h]$ is not a point at infinity, where $h$
+  is the cofactor of the curve.
+- The prover's commitment value is equal to $G * [r] + P * [c]$
 
 ## Zero Knowledge Proofs
 
-Zero knowledge proofs are a way by which one party succeeds in convincing another party that she knows a private value x without exposing any information apart from the fact that she knows the value x.
+Zero knowledge proofs are a way by which one party succeeds in convincing
+another party that she knows a private value $x$ without exposing any information
+apart from the fact that she knows the value $x$.
 
 All proof systems have two requirements:
 
-- **Completeness**: An honest verifier will be convinced of this fact by an untrusted prover.
+- **Completeness**: An honest verifier will be convinced of this fact by an
+  untrusted prover.
 
-- **Soundness**: No prover, even if it doesn't follow the protocol, can convince the honest verifier that it is true, except with some small probability.
+- **Soundness**: No prover, even if it doesn't follow the protocol, can convince
+  the honest verifier that it is true, except with some small probability.
 
 It is assumed that the verifier is always honest.
 
 ## Schnorr NIZK proof
 
-The original Schnorr identification scheme is made non-interactive through a Fiat-Shamir transformation, assuming that there exists a secure cryptographic hash function (i.e., the so-called random oracle model).
+The original Schnorr identification scheme is made non-interactive through a
+Fiat-Shamir transformation, assuming that there exists a secure cryptographic
+hash function (i.e., the so-called random oracle model).
 
-An oracle is considered to be a black box that outputs unpredictable but deterministic random values in response to a certain input. That means that, given the same input, the oracle will give back the same random output. The input to the random oracle, in the Fiat-Shamir heuristic, is specifically the transcript of the interaction up to that point. The challenge is then redefined as `challenge = H(g || V || A)`, where `H` is a secure cryptographic hash function like SHA-256. The bit length of the hash output should be at least equal to that of the order `n` of the considered subgroup.
+An oracle is considered to be a black box that outputs unpredictable but
+deterministic random values in response to a certain input. That means that,
+given the same input, the oracle will give back the same random output. The
+input to the random oracle, in the Fiat-Shamir heuristic, is specifically the
+transcript of the interaction up to that point. The challenge is then redefined
+as $c = H(g \parallel V \parallel A)$, where $H$ is a secure cryptographic hash
+function like SHA-256. The bit length of the hash output should be at least
+equal to that of the order $n$ of the considered subgroup.
 
-An example of the Schnorr protocol for Non-Interactive Zero-Knowledge Proofs looks as follows.
+An example of the Schnorr protocol for Non-Interactive Zero-Knowledge Proofs
+looks as follows.
 
 ```haskell
-
 testSchnorrNIZK :: IO Bool
 testSchnorrNIZK = do
   -- Setup
@@ -68,13 +86,12 @@ testSchnorrNIZK = do
 
   -- Verifier
   pure $ Schnorr.verify curveName basePoint pk proof
-
 ```
 
 ## Curves
 
-This Schnorr implementation offers support for both SECp256k1 and Curve25519 curves,
-which are Koblitz and Montgomery curves, respectively.
+This Schnorr implementation offers support for both SECP256k1 and Curve25519
+curves, which are Koblitz and Montgomery curves, respectively.
 
 * SECP256k1
 * Curve25519
@@ -86,7 +103,8 @@ which are Koblitz and Montgomery curves, respectively.
 
 **Notation**:
 
-1. `P * [b]`: multiplication of a point P with a scalar b over an elliptic curve defined over a finite field modulo a prime number
+1. $P * [b]$ : multiplication of a point $P$ with a scalar $b$ over an elliptic
+   curve defined over a finite field modulo a prime number
 
 ## Disclaimer
 
