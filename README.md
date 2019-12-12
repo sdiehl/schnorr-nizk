@@ -10,7 +10,7 @@ The purpose of the Schnorr protocol is to allow one to prove the knowledge of a 
 
 ## Schnorr Identification Scheme
 
-The Schnorr protocol is an example of a Sigma protocol ($\Sigma$-protocol).  A
+The Schnorr protocol is an example of a Sigma protocol (<img alt="$\Sigma$" src="tex/813cd865c037c89fcdc609b25c465a05.svg" align="middle" width="11.87217899999999pt" height="22.465723500000017pt"/>-protocol).  A
 Sigma protocol is a three-step protocol in which communication between prover
 and verifier goes forwards once, then backwards, then forwards again.  In
 general terms:
