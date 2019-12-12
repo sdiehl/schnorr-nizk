@@ -22,22 +22,22 @@ general terms:
 The protocol is defined for a cyclic group of order <img src="/tex/55a049b8f161ae7cfeb0197d75aff967.svg?invert_in_darkmode&sanitize=true" align=middle width=9.86687624999999pt height=14.15524440000002pt/>.
 
 The prover aims to convince the verifier that he knows some private value <img src="/tex/44bc9d542a92714cac84e01cbbb7fd61.svg?invert_in_darkmode&sanitize=true" align=middle width=8.68915409999999pt height=14.15524440000002pt/>.
-Therefore, <img src="/tex/217e3cce97b69cdf6ae38d77111aeb9c.svg?invert_in_darkmode&sanitize=true" align=middle width=81.02561609999998pt height=24.65753399999998pt/> (see [1]) will be her public key. In order to prove
+Therefore, <img src="/tex/e9038b8ddce37b94004bf4faad6e7264.svg?invert_in_darkmode&sanitize=true" align=middle width=77.37262994999999pt height=24.65753399999998pt/> (see [1]) will be her public key. In order to prove
 knowledge of it, the prover interacts with the verifier in three passes:
 
-- The prover commits to a random private value <img src="/tex/6c4adbc36120d62b98deef2a20d5d303.svg?invert_in_darkmode&sanitize=true" align=middle width=8.55786029999999pt height=14.15524440000002pt/>, chosen in the range <img src="/tex/11a809236d5f9b0c1a076ad810b8690d.svg?invert_in_darkmode&sanitize=true" align=middle width=62.83481819999999pt height=24.65753399999998pt/>. This is the first message commitment <img src="/tex/7f409c79d6e72f36dcce7e5f9b17240d.svg?invert_in_darkmode&sanitize=true" align=middle width=75.17133524999998pt height=24.65753399999998pt/>.
+- The prover commits to a random private value <img src="/tex/6c4adbc36120d62b98deef2a20d5d303.svg?invert_in_darkmode&sanitize=true" align=middle width=8.55786029999999pt height=14.15524440000002pt/>, chosen in the range <img src="/tex/7e0d17922ebb7f7727c61c114a4a6e86.svg?invert_in_darkmode&sanitize=true" align=middle width=62.83481819999999pt height=24.65753399999998pt/>. This is the first message commitment <img src="/tex/4995c46ed6c126a9e551683efedeb34a.svg?invert_in_darkmode&sanitize=true" align=middle width=71.51835075pt height=24.65753399999998pt/>.
 
 - The verifier replies with a `challenge` chosen at random from <img src="/tex/8a1f3cd6b928ebf50788855d5a539172.svg?invert_in_darkmode&sanitize=true" align=middle width=66.97483814999998pt height=26.085962100000025pt/>.
 
 - After receiving the `challenge`, the prover sends the third and last message
-  (the response) <img src="/tex/a1c37352a78693f2830516a7ba5d8dc4.svg?invert_in_darkmode&sanitize=true" align=middle width=154.88569965pt height=24.65753399999998pt/>.
+  (the response) <img src="/tex/ef26fb18eebe8a0219cbc89c6bbf5a31.svg?invert_in_darkmode&sanitize=true" align=middle width=151.2327135pt height=24.65753399999998pt/>.
 
 The verifier accepts, if:
 
 - The prover's public key, <img src="/tex/df5a289587a2f0247a5b97c1e8ac58ca.svg?invert_in_darkmode&sanitize=true" align=middle width=12.83677559999999pt height=22.465723500000017pt/>, is a valid public key. It means that it must be
-  a valid point on the curve and <img src="/tex/3e71f28cba3c1f8c60ba8a8088795662.svg?invert_in_darkmode&sanitize=true" align=middle width=46.96530134999999pt height=24.65753399999998pt/> is not a point at infinity, where <img src="/tex/2ad9d098b937e46f9f58968551adac57.svg?invert_in_darkmode&sanitize=true" align=middle width=9.47111549999999pt height=22.831056599999986pt/>
-  is the cofactor of the curve.
-- The prover's commitment value is equal to <img src="/tex/293f4452c572c4fe5c65a1c220e5bfc6.svg?invert_in_darkmode&sanitize=true" align=middle width=110.15419634999998pt height=24.65753399999998pt/>
+  a valid point on the curve and <img src="/tex/44503004471f3ac6ef45826b069d0fa8.svg?invert_in_darkmode&sanitize=true" align=middle width=43.31231684999999pt height=24.65753399999998pt/> is not a point at infinity, where
+  <img src="/tex/2ad9d098b937e46f9f58968551adac57.svg?invert_in_darkmode&sanitize=true" align=middle width=9.47111549999999pt height=22.831056599999986pt/> is the cofactor of the curve.
+- The prover's commitment value is equal to <img src="/tex/082bdfdbb1bf27bb2ca138de799dfa4c.svg?invert_in_darkmode&sanitize=true" align=middle width=102.84822569999999pt height=24.65753399999998pt/>
 
 ## Zero Knowledge Proofs
 
@@ -85,7 +85,25 @@ testSchnorrNIZK = do
   proof <- Schnorr.prove curveName basePoint keyPair
 
   -- Verifier
-  pure <img src="/tex/eb85da59005f18b956b463bdabcbac7f.svg?invert_in_darkmode&sanitize=true" align=middle width=855.8018518499999pt height=355.0684929pt/>P * [b]<img src="/tex/f8c99f42ea3eb78fb42ae2d0bd4c91c9.svg?invert_in_darkmode&sanitize=true" align=middle width=178.3821468pt height=22.831056599999986pt/>P<img src="/tex/7f15d2786e32be97ca20ab5c4687f379.svg?invert_in_darkmode&sanitize=true" align=middle width=87.26932994999999pt height=22.831056599999986pt/>b$ over an elliptic
+  pure (Schnorr.verify curveName basePoint pk proof)
+```
+
+## Curves
+
+This Schnorr implementation offers support for both SECP256k1 and Curve25519
+curves, which are Koblitz and Montgomery curves, respectively.
+
+* SECP256k1
+* Curve25519
+
+**References**:
+
+1.  Hao, F. "Schnorr Non-interactive Zero-Knowledge Proof." Newcastle University, UK, 2017
+2. Schnorr Non-interactive Zero-Knowledge Proof [https://tools.ietf.org/html/rfc8235](https://tools.ietf.org/html/rfc8235)
+
+**Notation**:
+
+1. <img src="/tex/b38c1f3a84b4eb88f169638e34cb23b0.svg?invert_in_darkmode&sanitize=true" align=middle width=40.89599744999999pt height=24.65753399999998pt/> : multiplication of a point <img src="/tex/df5a289587a2f0247a5b97c1e8ac58ca.svg?invert_in_darkmode&sanitize=true" align=middle width=12.83677559999999pt height=22.465723500000017pt/> with a scalar <img src="/tex/4bdc8d9bcfb35e1c9bfb51fc69687dfc.svg?invert_in_darkmode&sanitize=true" align=middle width=7.054796099999991pt height=22.831056599999986pt/> over an elliptic
    curve defined over a finite field modulo a prime number
 
 ## Disclaimer
