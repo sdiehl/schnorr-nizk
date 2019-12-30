@@ -1,3 +1,11 @@
 .stack-work/
-schnorr-nizk.cabal
+*.sw[pon]
+*.prof
+*.prof.html
 *~
+*.hi
+*.o
+.ghc.environment.*
+dist*/
+TAGS
+dist-newstyle
